@@ -5,7 +5,7 @@
 # constant variables should be names clearly in ALL CAPS
 # with the exception of TOP, it's suggested to keep a tab (4 spaces in python3) in front of each line
 
-ROOT = "C:/Users/rozec/Documents/code/mdweb framework/site"
+ROOT = "" 
 
 TOP = """
 <!DOCTYPE html>
