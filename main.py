@@ -3,7 +3,7 @@ import markdown as md
 import htmlconfig as html
 
 HELP_MESSAGE = """
-python main.py <markdown path> <arguments>
+python main.py <markdown path> <OPTIONAL arguments>
     -v               : verbose, includes [DEBUG] infomation
     -o <output path> : uses stated output path instead of YAML frontmatter
     -r <root path>   : uses stated root path for output instead of 'htmlconfig.py'
