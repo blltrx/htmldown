@@ -39,6 +39,7 @@ if "-h" in argvars or "--help" in argvars or "-help" in argvars:
     sys.exit(0)
 
 def createPageString(contentstring:str) -> str:
+    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
     header = ""
     topbar = ""
     footer = ""
@@ -47,7 +48,6 @@ def createPageString(contentstring:str) -> str:
     if not EXCLUDE_EXTRA:
         topbar = html.TOPBAR
         footer = html.FOOTER
-    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
     return f"""
 {html.TOP}
 <head>
