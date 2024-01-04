@@ -4,15 +4,18 @@ import htmlconfig as html
 
 HELP_MESSAGE = """
 python main.py <markdown path> <arguments>
+    -v               : verbose, includes [DEBUG] infomation
     -o <output path> : uses stated output path instead of YAML frontmatter
-    -v               : verbose, displaces [DEBUG] infomation
     -r <root path>   : uses stated root path for output instead of 'htmlconfig.py'
     --exclude-extra  : DOES NOT add a navigation 'TOPBAR' or 'FOOTER' to <body> in final output
-requires htmlconfig.py createPageStringExcludeExtraBody() and createPageString() methods.
+    --exclude-head   : DOES NOT add 'HEADERS' into <head> defined in final output
+requires htmlconfig.py 'TOP' variable, and unless excluded, 'HEADERS', 'TOPBAR' and 'FOOTER'
+requires markdown from pip 'pip install markdown'
 """
 
 DEBUG = False
 EXCLUDE_EXTRA = False
+EXCLUDE_HEAD = False
 path = ""
 root = ""
 
@@ -23,13 +26,43 @@ if "-v" in argvars:
     DEBUG = True
 if "--exclude-extra" in argvars:
     EXCLUDE_EXTRA = True
+    if DEBUG: print(f"[DEBUG] EXCLUDE_EXTRA = True")
+if "--exclude-head" in argvars:
+    EXCLUDE_HEAD = True
+    if DEBUG: print(f"[DEBUG] EXCLUDE_HEAD = True")
 if "-r" in argvars:
     root = argvars[argvars.index("-r")+1]
 if "-o" in argvars:
     path = argvars[argvars.index("-o")+1]
-if "-h" in argvars or "--help" in argvars:
+if "-h" in argvars or "--help" in argvars or "-help" in argvars:
     print(HELP_MESSAGE)
     sys.exit(0)
+
+def createPageString(contentstring:str) -> str:
+    header = ""
+    topbar = ""
+    footer = ""
+    if not EXCLUDE_HEAD:
+        header = html.HEADERS
+    if not EXCLUDE_EXTRA:
+        topbar = html.TOPBAR
+        footer = html.FOOTER
+    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
+    return f"""
+{html.TOP}
+<head>
+{header}
+</head>
+
+<body>
+{topbar}
+<div class="contentWrap">
+{contentstring}
+{footer}
+</div>
+</body>
+</html>
+"""
 
 def seperate_yaml(filestring: str) -> tuple[dict[str,str],str]:
     "extracts YAML heading from filestring, and returns YAML as a dictionary and filestring with YAML header removed"
@@ -55,9 +88,7 @@ def convert(inputpath:str) -> tuple[dict[str,str],str]: # depends on seperate_ya
 
     if DEBUG: print(f"[DEBUG]: extracted YAML heading {yaml}")
     if DEBUG: print(f"[DEBUG]: converted body to html")
-    if EXCLUDE_EXTRA:
-        pagestring = html.createPageStringExcludeExtraBody(html_content_string)
-    else: pagestring = html.createPageString(html_content_string)
+    pagestring = createPageString(html_content_string)
     return yaml, pagestring
 
 def main() -> None:
@@ -68,8 +99,6 @@ def main() -> None:
     try:
         if path == "":
             path = yaml['path']
-        else:
-            sys.exit("[ERROR]: 'path' not specified, please use -o <output path>")
         if root == "":
             root = html.ROOT
         outputpath = f"{root}/{path}"

@@ -42,38 +42,3 @@ TOPBAR = """
 FOOTER = """
 
 """
-
-# defines page structure, does not check css
-def createPageString(contentstring:str) -> str:
-    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
-    return f"""
-{TOP}
-<head>
-{HEADERS}
-</head>
-
-<body>
-{TOPBAR}
-<div class="contentWrap">
-{contentstring}
-{FOOTER}
-</div>
-</body>
-</html>
-"""
-
-def createPageStringExcludeExtraBody(contentstring:str) -> str:
-    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format. DOES NOT add a navigation 'TOPBAR' or 'FOOTER' to <body>"
-    return f"""
-{TOP}
-<head>
-{HEADERS}
-</head>
-
-<body>
-<div class="contentWrap">
-{contentstring}
-</div>
-</body>
-</html>
-"""
