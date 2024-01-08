@@ -1,7 +1,6 @@
 # welcome to htmlconfig.py!
 
 # change lines between """ to edit
-# when editing the createPageString function use f string syntax. surround variable name in {curly braces}
 # constant variables should be names clearly in ALL CAPS
 # with the exception of TOP, it's suggested to keep a tab (4 spaces in python3) in front of each line
 
