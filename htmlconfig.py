@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # welcome to htmlconfig.py!
 
 # change lines between """ to edit

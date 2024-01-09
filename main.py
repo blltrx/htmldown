@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 import markdown as md
 import htmlconfig as html
