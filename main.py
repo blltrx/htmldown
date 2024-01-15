@@ -21,6 +21,9 @@ path = ""
 root = ""
 
 # argument definitions
+if len(sys.argv) == 1:
+    print(HELP_MESSAGE)
+    sys.exit(1)
 argvars = sys.argv[1:]
 infile = argvars[0]
 if "-v" in argvars:
@@ -110,9 +113,11 @@ def main() -> None:
     except FileNotFoundError as exception:
         if DEBUG:
             print(f"[DEBUG]: {exception}")
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it.")
+            print("[ERROR]: Directory path invalid. Check it exists, if not create it.")
+            sys.exit(2)
         else:
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it. Run with -v for DEBUG infomation")
+            print("[ERROR]: Directory path invalid. Check it exists, if not create it. Run with -v for DEBUG infomation")
+            sys.exit(2)
 
 if __name__ == "__main__":
     main()
