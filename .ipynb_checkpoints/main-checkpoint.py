@@ -17,11 +17,13 @@ requires markdown from pip 'pip install markdown'
 DEBUG = False
 EXCLUDE_EXTRA = False
 EXCLUDE_HEAD = False
-MARKDOWN_EXTENTIONS = ['extra']
 path = ""
 root = ""
 
 # argument definitions
+if len(sys.argv) == 1:
+    print(HELP_MESSAGE)
+    sys.exit(1)
 argvars = sys.argv[1:]
 infile = argvars[0]
 if "-v" in argvars:
@@ -40,15 +42,6 @@ if "-h" in argvars or "--help" in argvars or "-help" in argvars:
     print(HELP_MESSAGE)
     sys.exit(0)
 
-def addHashMarkToHTML(htmlstring:str) -> str: # made for custom formatting in roseis.gay / bellatrix.dev
-    try:
-        h1index = htmlstring.index("<h1>") 
-        HASHMARKSTRING = '<h1 class="title"><span class="hash">#</span>' 
-        htmlstring = htmlstring[:h1index] + HASHMARKSTRING + htmlstring[h1index+4:] # 4 is the length of the substring
-        return htmlstring
-    except ValueError:
-        return htmlstring
-
 def createPageString(contentstring:str) -> str:
     "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
     header = ""
@@ -66,8 +59,8 @@ def createPageString(contentstring:str) -> str:
 </head>
 
 <body>
-<div class="contentWrap">
 {topbar}
+<div class="contentWrap">
 {contentstring}
 {footer}
 </div>
@@ -90,13 +83,12 @@ def seperate_yaml(filestring: str) -> tuple[dict[str,str],str]:
 
 def convert(inputpath:str) -> tuple[dict[str,str],str]: # depends on seperate_yaml
     "takes a path to a plain text file in markdown, and outputs an html page based on 'htmlconfig.py'"
-    if DEBUG: print(f"[DEBUG]: opening file {inputpath}")
     with open(inputpath, "r") as f:
         filestring = f.read()
         f.close()
     if DEBUG: print(f"[DEBUG]: reading file {inputpath}")
     yaml, bodymd = seperate_yaml(filestring)
-    html_content_string = md.markdown(bodymd, extensions=MARKDOWN_EXTENTIONS)
+    html_content_string = md.markdown(bodymd)
 
     if DEBUG: print(f"[DEBUG]: extracted YAML heading {yaml}")
     if DEBUG: print(f"[DEBUG]: converted body to html")
@@ -106,7 +98,7 @@ def convert(inputpath:str) -> tuple[dict[str,str],str]: # depends on seperate_ya
 def main() -> None:
     global path, root
     yaml, pagestring = convert(infile)
-    pagestring = addHashMarkToHTML(pagestring)
+
     if DEBUG: print(f"[DEBUG]: attempting to save file")
     try:
         if path == "":
@@ -121,9 +113,11 @@ def main() -> None:
     except FileNotFoundError as exception:
         if DEBUG:
             print(f"[DEBUG]: {exception}")
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it.")
+            print("[ERROR]: Directory path invalid. Check it exists, if not create it.")
+            sys.exit(2)
         else:
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it. Run with -v for DEBUG infomation")
+            print("[ERROR]: Directory path invalid. Check it exists, if not create it. Run with -v for DEBUG infomation")
+            sys.exit(2)
 
 if __name__ == "__main__":
     main()
