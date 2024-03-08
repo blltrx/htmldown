@@ -109,9 +109,9 @@ def main() -> None:
     pagestring = addHashMarkToHTML(pagestring)
     if DEBUG: print(f"[DEBUG]: attempting to save file")
     try:
-        if path == "":
+        if path:
             path = yaml['path']
-        if root == "":
+        if root:
             root = html.ROOT
         outputpath = f"{root}/{path}"
         with open(outputpath, "w") as f:
