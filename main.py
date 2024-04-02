@@ -28,10 +28,12 @@ if "-v" in argvars:
     DEBUG = True
 if "--exclude-extra" in argvars:
     EXCLUDE_EXTRA = True
-    if DEBUG: print(f"[DEBUG] EXCLUDE_EXTRA = True")
+    if DEBUG:
+        print("[DEBUG] EXCLUDE_EXTRA = True")
 if "--exclude-head" in argvars:
     EXCLUDE_HEAD = True
-    if DEBUG: print(f"[DEBUG] EXCLUDE_HEAD = True")
+    if DEBUG:
+        print("[DEBUG] EXCLUDE_HEAD = True")
 if "-r" in argvars:
     root = argvars[argvars.index("-r")+1]
 if "-o" in argvars:
@@ -40,17 +42,26 @@ if "-h" in argvars or "--help" in argvars or "-help" in argvars:
     print(HELP_MESSAGE)
     sys.exit(0)
 
-def addHashMarkToHTML(htmlstring:str) -> str: # made for custom formatting in roseis.gay / bellatrix.dev
+
+def addHashMarkToHTML(htmlstring: str) -> str:
+    """return htmlstring but with decorative element
+    added infront of the first instance of heading 1"""
     try:
-        h1index = htmlstring.index("<h1>") 
-        HASHMARKSTRING = '<h1 class="title"><span class="hash">#</span>' 
-        htmlstring = htmlstring[:h1index] + HASHMARKSTRING + htmlstring[h1index+4:] # 4 is the length of the substring
+        h1index = htmlstring.index("<h1>")
+        HASHMARKSTRING = '<h1 class="title"><span class="hash">#</span>'
+        (htmlstring) = (
+            htmlstring[:h1index] +
+            HASHMARKSTRING +
+            htmlstring[h1index+4:])
+        # 4 is the length of the substring
         return htmlstring
     except ValueError:
         return htmlstring
 
-def createPageString(contentstring:str) -> str:
-    "outputs html page with parameters in 'htmlconfig.py', with content defined in an input string in html format"
+
+def createPageString(contentstring: str) -> str:
+    """return string of html file with parameters in 'htmlconfig.py',
+    with content defined in an input string in html format"""
     header = ""
     topbar = ""
     footer = ""
@@ -75,39 +86,51 @@ def createPageString(contentstring:str) -> str:
 </html>
 """
 
-def seperate_yaml(filestring: str) -> tuple[dict[str,str],str]:
-    "extracts YAML heading from filestring, and returns YAML as a dictionary and filestring with YAML header removed"
+
+def seperate_yaml(filestring: str) -> tuple[dict[str, str], str]:
+    """
+    extract YAML heading from filestring, and return YAML as a dictionary and
+    filestring with YAML header removed"""
     startindex = filestring.find("---")
-    endindex = filestring.find("---",5)
+    endindex = filestring.find("---", 5)
     yaml = ""
     body = ""
     if startindex != 0:
-        return ({"":""}, filestring)
+        return ({"": ""}, filestring)
     yamlstring = filestring[startindex+4:endindex-1]
     yaml = dict(subString.split(": ") for subString in yamlstring.split("\n"))
     body = filestring[endindex+4:]
     return (yaml, body)
 
-def convert(inputpath:str) -> tuple[dict[str,str],str]: # depends on seperate_yaml
-    "takes a path to a plain text file in markdown, and outputs an html page based on 'htmlconfig.py'"
-    if DEBUG: print(f"[DEBUG]: opening file {inputpath}")
+
+def convert(inputpath: str) -> tuple[dict[str, str], str]:
+    """take a path to a plain text file in markdown,
+    and return an html page based on 'htmlconfig.py'
+    is dependant on 'seperate_yaml'"""
+    if DEBUG:
+        print(f"[DEBUG]: opening file {inputpath}")
     with open(inputpath, "r") as f:
         filestring = f.read()
         f.close()
-    if DEBUG: print(f"[DEBUG]: reading file {inputpath}")
+    if DEBUG:
+        print(f"[DEBUG]: reading file {inputpath}")
     yaml, bodymd = seperate_yaml(filestring)
     html_content_string = md.markdown(bodymd, extensions=MARKDOWN_EXTENTIONS)
 
-    if DEBUG: print(f"[DEBUG]: extracted YAML heading {yaml}")
-    if DEBUG: print(f"[DEBUG]: converted body to html")
+    if DEBUG:
+        print(f"[DEBUG]: extracted YAML heading {yaml}")
+    if DEBUG:
+        print("[DEBUG]: converted body to html")
     pagestring = createPageString(html_content_string)
     return yaml, pagestring
+
 
 def main() -> None:
     global path, root
     yaml, pagestring = convert(infile)
     pagestring = addHashMarkToHTML(pagestring)
-    if DEBUG: print(f"[DEBUG]: attempting to save file")
+    if DEBUG:
+        print("[DEBUG]: attempting to save file")
     try:
         if path:
             path = yaml['path']
@@ -121,9 +144,15 @@ def main() -> None:
     except FileNotFoundError as exception:
         if DEBUG:
             print(f"[DEBUG]: {exception}")
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it.")
+            sys.exit("""
+                [ERROR]: Directory path invalid.
+                Check it exists, if not create it.""")
         else:
-            sys.exit("[ERROR]: Directory path invalid. Check it exists, if not create it. Run with -v for DEBUG infomation")
+            sys.exit("""
+                [ERROR]: Directory path invalid.
+                Check it exists, if not create it.
+                Run with -v for DEBUG infomation")""")
+
 
 if __name__ == "__main__":
     main()
